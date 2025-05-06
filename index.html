@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Padoca - Controle de Estoque</title>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore-compat.js"></script>
+
+  <!-- Font Awesome para ícone de lixeira -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background-color: #fff8f0;
+      color: #4e342e;
+    }
+
+    header {
+      background-color: #6d4c41;
+      padding: 1rem;
+      text-align: center;
+      color: white;
+    }
+
+    header img {
+      height: 80px;
+    }
+
+    header h1 {
+      margin: 1rem 0 0;
+    }
+
+    main {
+      max-width: 800px;
+      margin: 2rem auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.05);
+    }
+
+    h2 {
+      margin-top: 2rem;
+    }
+
+    input, button {
+      padding: 0.6rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      margin-right: 0.5rem;
+      font-size: 1rem;
+    }
+
+    button {
+      background-color: #ffca28;
+      color: #4e342e;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #ffc107;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+
+    th, td {
+      padding: 0.6rem;
+      border: 1px solid #ddd;
+      text-align: center;
+    }
+
+    th {
+      background-color: #6d4c41;
+      color: white;
+    }
+
+    .actions button {
+      background-color: brown;
+      color: white;
+    }
+
+    .actions button:hover {
+      background-color: #e64a19;
+    }
+
+    .login-area {
+      text-align: center;
+      margin-top: 1rem;
+    }
+
+    .logout {
+      background-color: #d84315;
+      color: white;
+      margin-top: 1rem;
+    }
+
+    .logout:hover {
+      background-color: #bf360c;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="logo.png" alt="Logo Padoca" />
+    <h1>Controle de Estoque</h1>
+  </header>
+
+  <main>
+    <div class="login-area">
+      <button id="loginBtn">Entrar com Google</button>
+      <p id="userEmail"></p>
+      <button id="logoutBtn" class="logout" style="display: none; margin-top: 0.5rem;">Sair</button>
+    </div>
+
+    <div id="estoqueArea" style="display: none;">
+      <h2>Adicionar Produto</h2>
+      <input type="text" id="nomeProduto" placeholder="Nome do produto" />
+      <input type="number" id="quantidadeProduto" placeholder="Quantidade" />
+      <button onclick="adicionarProduto()">Adicionar</button>
+
+      <h2>Estoque Atual</h2>
+      <input type="text" id="filtroBusca" placeholder="Buscar produto" oninput="atualizarTabela()" />
+      <table>
+        <thead>
+          <tr>
+            <th>Produto</th>
+            <th>Quantidade</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody id="tabelaEstoque"></tbody>
+      </table>
+    </div>
+  </main>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCxkbcktBWOiPONF_GOHU0FivN4Tq55HSE",
+      authDomain: "estoque-padoca.firebaseapp.com",
+      projectId: "estoque-padoca",
+      storageBucket: "estoque-padoca.firebasestorage.app",
+      messagingSenderId: "583000838438",
+      appId: "1:583000838438:web:d6d4407d17f4ce954b31e7"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    let userUID = null;
+    let estoque = [];
+
+    const loginBtn = document.getElementById('loginBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const userEmail = document.getElementById('userEmail');
+    const estoqueArea = document.getElementById('estoqueArea');
+
+    loginBtn.onclick = () => {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      auth.signInWithPopup(provider)
+        .then(result => {
+          console.log("Usuário logado:", result.user.email);
+        })
+        .catch(error => {
+          console.error("Erro ao logar:", error.message);
+          alert("Erro ao logar: " + error.message);
+        });
+    };
+
+    logoutBtn.onclick = () => {
+      auth.signOut()
+        .then(() => console.log("Usuário deslogado"))
+        .catch(err => console.error("Erro ao deslogar:", err));
+    };
+
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        userUID = user.uid;
+        userEmail.textContent = `Logado como: ${user.email}`;
+        loginBtn.style.display = 'none';
+        logoutBtn.style.display = 'inline-block';
+        estoqueArea.style.display = 'block';
+        carregarEstoque();
+      } else {
+        userUID = null;
+        userEmail.textContent = '';
+        loginBtn.style.display = 'inline-block';
+        logoutBtn.style.display = 'none';
+        estoqueArea.style.display = 'none';
+      }
+    });
+
+    async function carregarEstoque() {
+      try {
+        const snapshot = await db.collection('estoques').doc(userUID).get();
+        estoque = snapshot.exists ? snapshot.data().itens || [] : [];
+        atualizarTabela();
+      } catch (err) {
+        console.error("Erro ao carregar estoque:", err);
+      }
+    }
+
+    function salvarEstoque() {
+      db.collection('estoques').doc(userUID).set({ itens: estoque });
+    }
+
+    function atualizarTabela() {
+      const tabela = document.getElementById('tabelaEstoque');
+      const filtro = document.getElementById('filtroBusca').value.toLowerCase();
+      tabela.innerHTML = '';
+
+      estoque
+        .filter(item => item.nome.toLowerCase().includes(filtro))
+        .forEach((item, index) => {
+          const linha = document.createElement('tr');
+          linha.innerHTML = `
+            <td><input type="text" value="${item.nome}" onchange="editarNome(${index}, this.value)" /></td>
+            <td><input type="number" value="${item.quantidade}" onchange="editarQuantidade(${index}, this.value)" /></td>
+            <td class="actions">
+              <button onclick="removerProduto(${index})"><i class="fas fa-trash-alt"></i></button>
+            </td>
+          `;
+          tabela.appendChild(linha);
+        });
+    }
+
+    function adicionarProduto() {
+      const nome = document.getElementById('nomeProduto').value.trim();
+      const quantidade = parseInt(document.getElementById('quantidadeProduto').value);
+
+      if (!nome || isNaN(quantidade)) return alert('Preencha os campos corretamente.');
+
+      const existente = estoque.find(p => p.nome.toLowerCase() === nome.toLowerCase());
+      if (existente) {
+        existente.quantidade += quantidade;
+      } else {
+        estoque.push({ nome, quantidade });
+      }
+
+      document.getElementById('nomeProduto').value = '';
+      document.getElementById('quantidadeProduto').value = '';
+      salvarEstoque();
+      atualizarTabela();
+    }
+
+    function removerProduto(index) {
+      if (confirm('Deseja remover este produto?')) {
+        estoque.splice(index, 1);
+        salvarEstoque();
+        atualizarTabela();
+      }
+    }
+
+    function editarNome(index, novoNome) {
+      if (!novoNome.trim()) return alert('Nome não pode estar vazio.');
+      estoque[index].nome = novoNome.trim();
+      salvarEstoque();
+      atualizarTabela();
+    }
+
+    function editarQuantidade(index, novaQtd) {
+      const qtd = parseInt(novaQtd);
+      if (isNaN(qtd) || qtd < 0) return alert('Quantidade inválida.');
+      estoque[index].quantidade = qtd;
+      salvarEstoque();
+      atualizarTabela();
+    }
+  </script>
+</body>
+</html>
