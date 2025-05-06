@@ -5,25 +5,29 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Padoca - Controle de Estoque</title>
 
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore-compat.js"></script>
 
-  <!-- Font Awesome para ícone de lixeira -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
+      font-family: 'Inter', sans-serif;
       margin: 0;
-      background-color: #fff8f0;
+      background-color: #fffaf5;
       color: #4e342e;
+      transition: background-color 0.3s, color 0.3s;
     }
 
     header {
       background-color: #6d4c41;
-      padding: 1rem;
+      padding: 1.5rem;
       text-align: center;
       color: white;
     }
@@ -33,7 +37,8 @@
     }
 
     header h1 {
-      margin: 1rem 0 0;
+      margin: 0.5rem 0 0;
+      font-size: 2rem;
     }
 
     main {
@@ -41,20 +46,27 @@
       margin: 2rem auto;
       background: white;
       padding: 2rem;
-      border-radius: 12px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.05);
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
     }
 
     h2 {
       margin-top: 2rem;
+      font-weight: 600;
     }
 
     input, button {
-      padding: 0.6rem;
+      padding: 0.6rem 1rem;
       border-radius: 6px;
       border: 1px solid #ccc;
       margin-right: 0.5rem;
       font-size: 1rem;
+      transition: box-shadow 0.2s, background-color 0.3s;
+    }
+
+    input:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px #ffca28;
     }
 
     button {
@@ -68,6 +80,16 @@
       background-color: #ffc107;
     }
 
+    .logout {
+      background-color: #d84315;
+      color: white;
+      margin-top: 0.8rem;
+    }
+
+    .logout:hover {
+      background-color: #bf360c;
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
@@ -76,7 +98,7 @@
 
     th, td {
       padding: 0.6rem;
-      border: 1px solid #ddd;
+      border: 1px solid #eee;
       text-align: center;
     }
 
@@ -86,8 +108,9 @@
     }
 
     .actions button {
-      background-color: brown;
+      background-color: #ff7043;
       color: white;
+      padding: 0.4rem 0.6rem;
     }
 
     .actions button:hover {
@@ -96,17 +119,40 @@
 
     .login-area {
       text-align: center;
-      margin-top: 1rem;
+      margin-bottom: 1.5rem;
     }
 
-    .logout {
-      background-color: #d84315;
+    #userEmail {
+      margin-top: 1rem;
+      font-size: 0.95rem;
+      color: #5d4037;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #4caf50;
       color: white;
-      margin-top: 1rem;
+      padding: 12px 20px;
+      border-radius: 8px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+      opacity: 0;
+      transform: translateY(20px);
+      pointer-events: none;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      z-index: 1000;
     }
 
-    .logout:hover {
-      background-color: #bf360c;
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .toast.error {
+      background: #e53935;
     }
   </style>
 </head>
@@ -118,9 +164,9 @@
 
   <main>
     <div class="login-area">
-      <button id="loginBtn">Entrar com Google</button>
       <p id="userEmail"></p>
-      <button id="logoutBtn" class="logout" style="display: none; margin-top: 0.5rem;">Sair</button>
+      <button id="loginBtn">Entrar com Google</button>
+      <button id="logoutBtn" class="logout" style="display: none;">Sair</button>
     </div>
 
     <div id="estoqueArea" style="display: none;">
@@ -144,6 +190,8 @@
     </div>
   </main>
 
+  <div class="toast" id="toast"></div>
+
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyCxkbcktBWOiPONF_GOHU0FivN4Tq55HSE",
@@ -158,30 +206,22 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    let userUID = null;
-    let estoque = [];
-
     const loginBtn = document.getElementById('loginBtn');
     const logoutBtn = document.getElementById('logoutBtn');
     const userEmail = document.getElementById('userEmail');
     const estoqueArea = document.getElementById('estoqueArea');
+    const toast = document.getElementById('toast');
+
+    let userUID = null;
+    let estoque = [];
 
     loginBtn.onclick = () => {
       const provider = new firebase.auth.GoogleAuthProvider();
-      auth.signInWithPopup(provider)
-        .then(result => {
-          console.log("Usuário logado:", result.user.email);
-        })
-        .catch(error => {
-          console.error("Erro ao logar:", error.message);
-          alert("Erro ao logar: " + error.message);
-        });
+      auth.signInWithPopup(provider).catch(e => showToast("Erro ao logar: " + e.message, true));
     };
 
     logoutBtn.onclick = () => {
-      auth.signOut()
-        .then(() => console.log("Usuário deslogado"))
-        .catch(err => console.error("Erro ao deslogar:", err));
+      auth.signOut();
     };
 
     auth.onAuthStateChanged(user => {
@@ -202,13 +242,9 @@
     });
 
     async function carregarEstoque() {
-      try {
-        const snapshot = await db.collection('estoques').doc(userUID).get();
-        estoque = snapshot.exists ? snapshot.data().itens || [] : [];
-        atualizarTabela();
-      } catch (err) {
-        console.error("Erro ao carregar estoque:", err);
-      }
+      const snapshot = await db.collection('estoques').doc(userUID).get();
+      estoque = snapshot.exists ? snapshot.data().itens || [] : [];
+      atualizarTabela();
     }
 
     function salvarEstoque() {
@@ -239,7 +275,10 @@
       const nome = document.getElementById('nomeProduto').value.trim();
       const quantidade = parseInt(document.getElementById('quantidadeProduto').value);
 
-      if (!nome || isNaN(quantidade)) return alert('Preencha os campos corretamente.');
+      if (!nome || isNaN(quantidade)) {
+        showToast('Preencha os campos corretamente.', true);
+        return;
+      }
 
       const existente = estoque.find(p => p.nome.toLowerCase() === nome.toLowerCase());
       if (existente) {
@@ -252,6 +291,7 @@
       document.getElementById('quantidadeProduto').value = '';
       salvarEstoque();
       atualizarTabela();
+      showToast('Produto adicionado com sucesso!');
     }
 
     function removerProduto(index) {
@@ -259,11 +299,15 @@
         estoque.splice(index, 1);
         salvarEstoque();
         atualizarTabela();
+        showToast('Produto removido.');
       }
     }
 
     function editarNome(index, novoNome) {
-      if (!novoNome.trim()) return alert('Nome não pode estar vazio.');
+      if (!novoNome.trim()) {
+        showToast('Nome não pode estar vazio.', true);
+        return;
+      }
       estoque[index].nome = novoNome.trim();
       salvarEstoque();
       atualizarTabela();
@@ -271,10 +315,19 @@
 
     function editarQuantidade(index, novaQtd) {
       const qtd = parseInt(novaQtd);
-      if (isNaN(qtd) || qtd < 0) return alert('Quantidade inválida.');
+      if (isNaN(qtd) || qtd < 0) {
+        showToast('Quantidade inválida.', true);
+        return;
+      }
       estoque[index].quantidade = qtd;
       salvarEstoque();
       atualizarTabela();
+    }
+
+    function showToast(msg, erro = false) {
+      toast.textContent = msg;
+      toast.className = 'toast show' + (erro ? ' error' : '');
+      setTimeout(() => toast.className = 'toast', 3000);
     }
   </script>
 </body>
