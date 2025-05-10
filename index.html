@@ -114,11 +114,23 @@
       background-color: #bf360c;
     }
 
+    .tabela-scroll {
+      overflow-x: auto;
+      width: 100%;
+    }
+
     table {
       width: 100%;
+      min-width: 600px;
+      margin-bottom: 40px;
       margin-bottom: 40px;
       border-collapse: collapse;
       margin-top: 1rem;
+    }
+
+    table input {
+      width: 100%;
+      box-sizing: border-box;
     }
 
     th, td {
@@ -215,6 +227,7 @@
 
       <h2>Estoque Atual</h2>
       <input type="text" id="filtroBusca" placeholder="Buscar produto" oninput="atualizarTabela()" />
+      <div class="tabela-scroll">
       <table>
         <thead>
           <tr>
