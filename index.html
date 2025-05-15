@@ -18,111 +18,62 @@
   <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore-compat.js"></script>
 
   <style>
-    body {
-      font-family: Arial, Helvetica, sans-serif;
-      display: flex;
-      flex-direction: column;
-      background-size: cover;
-      background-image: url('https://img.freepik.com/fotos-gratis/vetor-de-fundo-de-papel-texturizado-vintage_53876-104608.jpg?semt=ais_hybrid&w=740');
-      margin: 0;
-      background-color: #4e342e;
-      color: #4e342e;
-      transition: background-color 0.3s, color 0.3s;
-      overflow-x: hidden;
+    * {
+      box-sizing: border-box;
     }
 
-    @media (max-width: 768px) {
-      .container {
-        flex-direction: column;
-        gap: 10px;
-        padding: 10px;
-      }
-
-      table {
-        font-size: 0.9rem;
-      }
-
-      input, button {
-        width: 100%;
-        margin: 0.4rem 0;
-      }
-
-      .login-area button {
-        width: 100%;
-        margin: 0.4rem 0;
-      }
-
-      .tabela-container {
-        overflow-x: auto;
-      }
-
-      main {
-        margin: 1rem;
-        padding: 1.2rem;
-      }
-
-      header h1 {
-        font-size: 1.5rem;
-      }
-
-      header img {
-        height: 60px;
-      }
+    body {
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      background-image: url('https://img.freepik.com/fotos-gratis/vetor-de-fundo-de-papel-texturizado-vintage_53876-104608.jpg?semt=ais_hybrid&w=740');
+      background-size: cover;
+      background-color: #4e342e;
+      color: #4e342e;
     }
 
     header {
       background-color: #6d4c41;
-      padding: 1.5rem;
       text-align: center;
-      color: white;
+      padding: 1rem;
     }
 
     header img {
-      height: 80px;
+      height: 60px;
     }
 
     header h1 {
+      font-size: 1.5rem;
+      color: white;
       margin: 0.5rem 0 0;
-      font-size: 2rem;
     }
 
     main {
-      max-width: 800px;
-      flex: 1;
-      margin: 2rem auto;
+      margin: 1rem auto;
+      padding: 1rem;
       background: white;
-      padding: 2rem;
-      border-radius: 16px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      width: 95%;
+      max-width: 800px;
     }
 
     h2 {
+      font-size: 1.2rem;
       margin-top: 2rem;
-      font-weight: 600;
     }
 
     input, button {
-      padding: 0.6rem 1rem;
+      padding: 0.6rem;
+      margin: 0.5rem 0.25rem 0.5rem 0;
       border-radius: 6px;
       border: 1px solid #ccc;
-      margin-right: 0.5rem;
       font-size: 1rem;
-      transition: box-shadow 0.2s, background-color 0.3s;
+      width: 100%;
     }
 
     input:focus {
       outline: none;
       box-shadow: 0 0 0 2px #ffca28;
-    }
-
-    html, body {
-      height: 100%;
-      margin: 0;
-    }
-
-    .container {
-      display: flex;
-      gap: 20px;
     }
 
     button {
@@ -139,33 +90,56 @@
     .logout {
       background-color: #d84315;
       color: white;
-      margin-top: 0.8rem;
     }
 
     .logout:hover {
       background-color: #bf360c;
     }
 
+    .login-area {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
+    #userEmail {
+      margin: 0.5rem 0;
+      font-size: 0.95rem;
+      color: #5d4037;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    @media(min-width: 600px) {
+      .form-group {
+        flex-direction: row;
+      }
+      .form-group input, .form-group button {
+        flex: 1;
+      }
+      .form-group button {
+        flex: 0 0 auto;
+      }
+    }
+
     .tabela-container {
-      width: 100%;
       overflow-x: auto;
     }
 
     table {
       width: 100%;
-      min-width: 500px;
-      margin-top: 1rem;
       border-collapse: collapse;
-    }
-
-    table input {
-      width: 100%;
-      box-sizing: border-box;
+      margin-top: 1rem;
+      min-width: 500px;
     }
 
     th, td {
-      padding: 0.6rem;
-      border: 1px solid #eee;
+      border: 1px solid #ddd;
+      padding: 0.5rem;
       text-align: center;
     }
 
@@ -182,17 +156,6 @@
 
     .actions button:hover {
       background-color: #e64a19;
-    }
-
-    .login-area {
-      text-align: center;
-      margin-bottom: 1.5rem;
-    }
-
-    #userEmail {
-      margin-top: 1rem;
-      font-size: 0.95rem;
-      color: #5d4037;
     }
 
     .toast {
@@ -222,14 +185,11 @@
     }
 
     footer {
-      font-family: Arial, Helvetica, sans-serif;
-      width: 100%;
-      background-color: #60443A; 
+      background-color: #60443A;
       color: white;
       text-align: center;
-      padding: 1px 0;
+      padding: 0.5rem 0;
       font-weight: bold;
-      z-index: 100;
     }
   </style>
 </head>
@@ -248,7 +208,7 @@
 
     <div id="estoqueArea" style="display: none;">
       <h2>Adicionar Produto</h2>
-      <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+      <div class="form-group">
         <input type="text" id="nomeProduto" placeholder="Nome do produto" />
         <input type="number" id="quantidadeProduto" placeholder="Quantidade" />
         <button onclick="adicionarProduto()">Adicionar</button>
@@ -273,6 +233,145 @@
   </main>
 
   <div class="toast" id="toast"></div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCxkbcktBWOiPONF_GOHU0FivN4Tq55HSE",
+      authDomain: "estoque-padoca.firebaseapp.com",
+      projectId: "estoque-padoca",
+      storageBucket: "estoque-padoca.firebasestorage.app",
+      messagingSenderId: "583000838438",
+      appId: "1:583000838438:web:d6d4407d17f4ce954b31e7"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    const loginBtn = document.getElementById('loginBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const userEmail = document.getElementById('userEmail');
+    const estoqueArea = document.getElementById('estoqueArea');
+    const toast = document.getElementById('toast');
+
+    let userUID = null;
+    let estoque = [];
+
+    loginBtn.onclick = () => {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      auth.signInWithPopup(provider).catch(e => showToast("Erro ao logar: " + e.message, true));
+    };
+
+    logoutBtn.onclick = () => {
+      auth.signOut();
+    };
+
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        userUID = user.uid;
+        userEmail.textContent = `Logado como: ${user.email}`;
+        loginBtn.style.display = 'none';
+        logoutBtn.style.display = 'inline-block';
+        estoqueArea.style.display = 'block';
+        carregarEstoque();
+      } else {
+        userUID = null;
+        userEmail.textContent = '';
+        loginBtn.style.display = 'inline-block';
+        logoutBtn.style.display = 'none';
+        estoqueArea.style.display = 'none';
+      }
+    });
+
+    async function carregarEstoque() {
+      const snapshot = await db.collection('estoques').doc(userUID).get();
+      estoque = snapshot.exists ? snapshot.data().itens || [] : [];
+      atualizarTabela();
+    }
+
+    function salvarEstoque() {
+      db.collection('estoques').doc(userUID).set({ itens: estoque });
+    }
+
+    function atualizarTabela() {
+      const tabela = document.getElementById('tabelaEstoque');
+      const filtro = document.getElementById('filtroBusca').value.toLowerCase();
+      tabela.innerHTML = '';
+
+      estoque
+        .filter(item => item.nome.toLowerCase().includes(filtro))
+        .forEach((item, index) => {
+          const linha = document.createElement('tr');
+          linha.innerHTML = `
+            <td><input type="text" value="${item.nome}" onchange="editarNome(${index}, this.value)" /></td>
+            <td><input type="number" value="${item.quantidade}" onchange="editarQuantidade(${index}, this.value)" /></td>
+            <td class="actions">
+              <button onclick="removerProduto(${index})"><i class="fas fa-trash-alt"></i></button>
+            </td>
+          `;
+          tabela.appendChild(linha);
+        });
+    }
+
+    function adicionarProduto() {
+      const nome = document.getElementById('nomeProduto').value.trim();
+      const quantidade = parseInt(document.getElementById('quantidadeProduto').value);
+
+      if (!nome || isNaN(quantidade)) {
+        showToast('Preencha os campos corretamente.', true);
+        return;
+      }
+
+      const existente = estoque.find(p => p.nome.toLowerCase() === nome.toLowerCase());
+      if (existente) {
+        existente.quantidade += quantidade;
+      } else {
+        estoque.push({ nome, quantidade });
+      }
+
+      document.getElementById('nomeProduto').value = '';
+      document.getElementById('quantidadeProduto').value = '';
+      salvarEstoque();
+      atualizarTabela();
+      showToast('Produto adicionado com sucesso!');
+    }
+
+    function removerProduto(index) {
+      if (confirm('Deseja remover este produto?')) {
+        estoque.splice(index, 1);
+        salvarEstoque();
+        atualizarTabela();
+        showToast('Produto removido.');
+      }
+    }
+
+    function editarNome(index, novoNome) {
+      if (!novoNome.trim()) {
+        showToast('Nome não pode estar vazio.', true);
+        return;
+      }
+      estoque[index].nome = novoNome.trim();
+      salvarEstoque();
+      atualizarTabela();
+    }
+
+    function editarQuantidade(index, novaQtd) {
+      const qtd = parseInt(novaQtd);
+      if (isNaN(qtd) || qtd < 0) {
+        showToast('Quantidade inválida.', true);
+        return;
+      }
+      estoque[index].quantidade = qtd;
+      salvarEstoque();
+      atualizarTabela();
+    }
+
+    function showToast(msg, erro = false) {
+      toast.textContent = msg;
+      toast.className = 'toast show' + (erro ? ' error' : '');
+      setTimeout(() => toast.className = 'toast', 3000);
+    }
+  </script>
 
   <footer>
     <p>Desenvolvido por: Nathalia e Luiz Guilherme</p>
