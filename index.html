@@ -6,10 +6,13 @@
   <link rel="shortcut icon" href="Microsoft-Fluentui-Emoji-3d-Baguette-Bread-3d.512.png" type="image/x-icon">
   <title>Padoca - Controle de Estoque</title>
 
+  <!-- Google Font -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
 
+  <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
+  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore-compat.js"></script>
@@ -19,10 +22,10 @@
       font-family: Arial, Helvetica, sans-serif;
       display: flex;
       flex-direction: column;
+      background-image: url("Brown and White Simple Bakery Shop Presentation.png");
       background-size: cover;
-      background-image: url("Brown\ and\ White\ Simple\ Bakery\ Shop\ Presentation.png");
       background-repeat: no-repeat;
-      background-attachment: fixed; 
+      background-attachment: fixed;
       background-position: center top;
       min-height: 100vh;
       margin: 0;
@@ -31,16 +34,7 @@
       transition: background-color 0.3s, color 0.3s;
     }
 
-    @media (max-width: 768px) {
-  .container {
-    flex-direction: column;
-    gap: 10px;
-    padding: 10px;
-      }
-    }
-
     header {
-     
       padding: 1.5rem;
       text-align: center;
       color: white;
@@ -74,9 +68,8 @@
       padding: 0.6rem 1rem;
       border-radius: 6px;
       border: 1px solid #ccc;
-      margin-right: 0.5rem;
       font-size: 1rem;
-      transition: box-shadow 0.2s, background-color 0.3s;
+      margin: 5px 0;
     }
 
     input:focus {
@@ -84,18 +77,8 @@
       box-shadow: 0 0 0 2px #ffca28;
     }
 
-    html, body {
-      height: 100%;
-      margin: 0;
-    }
-
-    .container {
-      display: flex;
-      gap: 20px;
-    }
-
     button {
-      background:linear-gradient(-40deg, rgba(151, 147, 16, 0.842),rgb(219, 216, 27));
+      background: linear-gradient(-40deg, rgba(151, 147, 16, 0.842), rgb(219, 216, 27));
       color: #4e342e;
       border: none;
       cursor: pointer;
@@ -106,8 +89,8 @@
     }
 
     .logout {
-      background:linear-gradient(-60deg, rgb(95, 10, 10),rgba(124, 16, 16, 0.966));
-      color: rgb(255, 255, 255);
+      background: linear-gradient(-60deg, rgb(95, 10, 10), rgba(124, 16, 16, 0.966));
+      color: white;
       margin-top: 0.8rem;
     }
 
@@ -124,15 +107,11 @@
       background-image: url("logo.png");
       background-repeat: no-repeat;
       background-position: center;
-      background-size: 400px; 
-      position: relative;
-      z-index: 1;
+      background-size: 400px;
       width: 100%;
       min-width: 600px;
-      margin-bottom: 40px;
-      margin-bottom: 40px;
-      border-collapse: collapse;
       margin-top: 1rem;
+      border-collapse: collapse;
     }
 
     table input {
@@ -152,7 +131,7 @@
     }
 
     .actions button {
-      background:linear-gradient(-20deg, rgb(95, 10, 10),rgba(124, 16, 16, 0.966));
+      background: linear-gradient(-20deg, rgb(95, 10, 10), rgba(124, 16, 16, 0.966));
       color: white;
       padding: 0.4rem 0.6rem;
     }
@@ -171,7 +150,7 @@
       font-size: 0.95rem;
       color: #5d4037;
     }
-    
+
     .toast {
       position: fixed;
       bottom: 20px;
@@ -206,11 +185,36 @@
       padding: 10px 20px;
       border-radius: 12px;
       width: fit-content;
-      margin: 20px auto; 
+      margin: 20px auto;
       font-weight: bold;
-      
     }
-    
+
+    /* Mobile adjustments */
+    @media (max-width: 768px) {
+      main {
+        padding: 1rem;
+        margin: 1rem;
+      }
+
+      input, button {
+        width: 100%;
+        margin-bottom: 10px;
+      }
+
+      table {
+        min-width: unset;
+        font-size: 0.9rem;
+        background-size: 200px;
+      }
+
+      header img {
+        height: 60px;
+      }
+
+      header h1 {
+        font-size: 1.5rem;
+      }
+    }
   </style>
 </head>
 <body>
