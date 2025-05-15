@@ -41,6 +41,33 @@
       table {
         font-size: 0.9rem;
       }
+
+      input, button {
+        width: 100%;
+        margin: 0.4rem 0;
+      }
+
+      .login-area button {
+        width: 100%;
+        margin: 0.4rem 0;
+      }
+
+      .tabela-container {
+        overflow-x: auto;
+      }
+
+      main {
+        margin: 1rem;
+        padding: 1.2rem;
+      }
+
+      header h1 {
+        font-size: 1.5rem;
+      }
+
+      header img {
+        height: 60px;
+      }
     }
 
     header {
@@ -221,9 +248,11 @@
 
     <div id="estoqueArea" style="display: none;">
       <h2>Adicionar Produto</h2>
-      <input type="text" id="nomeProduto" placeholder="Nome do produto" />
-      <input type="number" id="quantidadeProduto" placeholder="Quantidade" />
-      <button onclick="adicionarProduto()">Adicionar</button>
+      <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+        <input type="text" id="nomeProduto" placeholder="Nome do produto" />
+        <input type="number" id="quantidadeProduto" placeholder="Quantidade" />
+        <button onclick="adicionarProduto()">Adicionar</button>
+      </div>
 
       <h2>Estoque Atual</h2>
       <input type="text" id="filtroBusca" placeholder="Buscar produto" oninput="atualizarTabela()" />
@@ -245,146 +274,8 @@
 
   <div class="toast" id="toast"></div>
 
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyCxkbcktBWOiPONF_GOHU0FivN4Tq55HSE",
-      authDomain: "estoque-padoca.firebaseapp.com",
-      projectId: "estoque-padoca",
-      storageBucket: "estoque-padoca.firebasestorage.app",
-      messagingSenderId: "583000838438",
-      appId: "1:583000838438:web:d6d4407d17f4ce954b31e7"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
-
-    const loginBtn = document.getElementById('loginBtn');
-    const logoutBtn = document.getElementById('logoutBtn');
-    const userEmail = document.getElementById('userEmail');
-    const estoqueArea = document.getElementById('estoqueArea');
-    const toast = document.getElementById('toast');
-
-    let userUID = null;
-    let estoque = [];
-
-    loginBtn.onclick = () => {
-      const provider = new firebase.auth.GoogleAuthProvider();
-      auth.signInWithPopup(provider).catch(e => showToast("Erro ao logar: " + e.message, true));
-    };
-
-    logoutBtn.onclick = () => {
-      auth.signOut();
-    };
-
-    auth.onAuthStateChanged(user => {
-      if (user) {
-        userUID = user.uid;
-        userEmail.textContent = `Logado como: ${user.email}`;
-        loginBtn.style.display = 'none';
-        logoutBtn.style.display = 'inline-block';
-        estoqueArea.style.display = 'block';
-        carregarEstoque();
-      } else {
-        userUID = null;
-        userEmail.textContent = '';
-        loginBtn.style.display = 'inline-block';
-        logoutBtn.style.display = 'none';
-        estoqueArea.style.display = 'none';
-      }
-    });
-
-    async function carregarEstoque() {
-      const snapshot = await db.collection('estoques').doc(userUID).get();
-      estoque = snapshot.exists ? snapshot.data().itens || [] : [];
-      atualizarTabela();
-    }
-
-    function salvarEstoque() {
-      db.collection('estoques').doc(userUID).set({ itens: estoque });
-    }
-
-    function atualizarTabela() {
-      const tabela = document.getElementById('tabelaEstoque');
-      const filtro = document.getElementById('filtroBusca').value.toLowerCase();
-      tabela.innerHTML = '';
-
-      estoque
-        .filter(item => item.nome.toLowerCase().includes(filtro))
-        .forEach((item, index) => {
-          const linha = document.createElement('tr');
-          linha.innerHTML = `
-            <td><input type="text" value="${item.nome}" onchange="editarNome(${index}, this.value)" /></td>
-            <td><input type="number" value="${item.quantidade}" onchange="editarQuantidade(${index}, this.value)" /></td>
-            <td class="actions">
-              <button onclick="removerProduto(${index})"><i class="fas fa-trash-alt"></i></button>
-            </td>
-          `;
-          tabela.appendChild(linha);
-        });
-    }
-
-    function adicionarProduto() {
-      const nome = document.getElementById('nomeProduto').value.trim();
-      const quantidade = parseInt(document.getElementById('quantidadeProduto').value);
-
-      if (!nome || isNaN(quantidade)) {
-        showToast('Preencha os campos corretamente.', true);
-        return;
-      }
-
-      const existente = estoque.find(p => p.nome.toLowerCase() === nome.toLowerCase());
-      if (existente) {
-        existente.quantidade += quantidade;
-      } else {
-        estoque.push({ nome, quantidade });
-      }
-
-      document.getElementById('nomeProduto').value = '';
-      document.getElementById('quantidadeProduto').value = '';
-      salvarEstoque();
-      atualizarTabela();
-      showToast('Produto adicionado com sucesso!');
-    }
-
-    function removerProduto(index) {
-      if (confirm('Deseja remover este produto?')) {
-        estoque.splice(index, 1);
-        salvarEstoque();
-        atualizarTabela();
-        showToast('Produto removido.');
-      }
-    }
-
-    function editarNome(index, novoNome) {
-      if (!novoNome.trim()) {
-        showToast('Nome não pode estar vazio.', true);
-        return;
-      }
-      estoque[index].nome = novoNome.trim();
-      salvarEstoque();
-      atualizarTabela();
-    }
-
-    function editarQuantidade(index, novaQtd) {
-      const qtd = parseInt(novaQtd);
-      if (isNaN(qtd) || qtd < 0) {
-        showToast('Quantidade inválida.', true);
-        return;
-      }
-      estoque[index].quantidade = qtd;
-      salvarEstoque();
-      atualizarTabela();
-    }
-
-    function showToast(msg, erro = false) {
-      toast.textContent = msg;
-      toast.className = 'toast show' + (erro ? ' error' : '');
-      setTimeout(() => toast.className = 'toast', 3000);
-    }
-  </script>
+  <footer>
+    <p>Desenvolvido por: Nathalia e Luiz Guilherme</p>
+  </footer>
 </body>
-<footer>
-  <p>Desenvolvido por: Nathalia e Luiz Guilherme</p>
-</footer>
 </html>
