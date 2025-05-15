@@ -2,220 +2,181 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="shortcut icon" href="Microsoft-Fluentui-Emoji-3d-Baguette-Bread-3d.512.png" type="image/x-icon">
   <title>Padoca - Controle de Estoque</title>
 
-  <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
 
-  <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
-  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore-compat.js"></script>
 
   <style>
-    /* Reset básico */
-    * {
-      box-sizing: border-box;
-    }
-
     body {
-      font-family: 'Inter', Arial, Helvetica, sans-serif;
-      background: url('https://img.freepik.com/fotos-gratis/vetor-de-fundo-de-papel-texturizado-vintage_53876-104608.jpg?semt=ais_hybrid&w=740') no-repeat center center fixed;
-      background-size: cover;
-      color: #4e342e;
-      margin: 0;
-      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      padding: 1rem;
+      background-size: cover;
+      background-image: url("Brown\ and\ White\ Simple\ Bakery\ Shop\ Presentation.png");
+      background-repeat: no-repeat;
+      background-attachment: fixed; 
+      background-position: center top;
+      min-height: 100vh;
+      margin: 0;
+      background-color: #4e342e;
+      color: #4e342e;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    @media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px;
+      }
     }
 
     header {
-      width: 100%;
-      max-width: 900px;
-      background-color: #6d4c41;
-      color: white;
+     
       padding: 1.5rem;
-      border-radius: 8px;
       text-align: center;
-      margin-bottom: 2rem;
+      color: white;
     }
 
     header img {
-      max-height: 80px;
-      display: block;
-      margin: 0 auto 1rem;
+      height: 80px;
     }
 
     header h1 {
-      margin: 0;
-      font-weight: 600;
+      margin: 0.5rem 0 0;
       font-size: 2rem;
     }
 
     main {
+      max-width: 800px;
+      flex: 1;
+      margin: 2rem auto;
       background: white;
-      width: 100%;
-      max-width: 900px;
-      border-radius: 12px;
       padding: 2rem;
-      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-      flex-grow: 1;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .login-area {
-      text-align: center;
-      margin-bottom: 2rem;
-    }
-
-    #userEmail {
-      margin-bottom: 1rem;
-      font-weight: 600;
-    }
-
-    button {
-      cursor: pointer;
-      border: none;
-      border-radius: 6px;
-      padding: 0.75rem 1.5rem;
-      font-size: 1rem;
-      font-weight: 600;
-      transition: background-color 0.3s ease;
-      font-family: inherit;
-    }
-
-    #loginBtn {
-      background-color: #f57c00;
-      color: white;
-    }
-
-    #loginBtn:hover {
-      background-color: #ef6c00;
-    }
-
-    #logoutBtn {
-      background-color: #d84315;
-      color: white;
-      margin-top: 0.5rem;
-      width: 100%;
-      max-width: 320px;
-    }
-
-    #logoutBtn:hover {
-      background-color: #bf360c;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
     }
 
     h2 {
-      margin-top: 0;
-      margin-bottom: 1rem;
+      margin-top: 2rem;
       font-weight: 600;
-      font-size: 1.3rem;
-      color: #4e342e;
     }
 
-    #adicionarProdutoContainer {
-      display: flex;
-      gap: 0.5rem;
-      margin-bottom: 1.5rem;
-      flex-wrap: wrap;
-    }
-
-    #adicionarProdutoContainer input[type="text"],
-    #adicionarProdutoContainer input[type="number"] {
-      flex: 1 1 150px;
+    input, button {
       padding: 0.6rem 1rem;
-      border: 1px solid #ccc;
       border-radius: 6px;
+      border: 1px solid #ccc;
+      margin-right: 0.5rem;
       font-size: 1rem;
+      transition: box-shadow 0.2s, background-color 0.3s;
     }
 
-    #adicionarProdutoContainer button {
-      background-color: #ffca28;
+    input:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px #ffca28;
+    }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+
+    .container {
+      display: flex;
+      gap: 20px;
+    }
+
+    button {
+      background:linear-gradient(-40deg, rgba(151, 147, 16, 0.842),rgb(219, 216, 27));
       color: #4e342e;
-      flex: 0 0 140px;
-      transition: background-color 0.3s ease;
+      border: none;
+      cursor: pointer;
     }
 
-    #adicionarProdutoContainer button:hover {
+    button:hover {
       background-color: #ffc107;
     }
 
-    #filtroBusca {
-      width: 100%;
-      max-width: 400px;
-      padding: 0.5rem 1rem;
-      font-size: 1rem;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      margin-bottom: 1rem;
+    .logout {
+      background:linear-gradient(-60deg, rgb(95, 10, 10),rgba(124, 16, 16, 0.966));
+      color: rgb(255, 255, 255);
+      margin-top: 0.8rem;
     }
 
-    .tabela-container {
+    .logout:hover {
+      background-color: #bf360c;
+    }
+
+    .tabela-scroll {
       overflow-x: auto;
-      border-radius: 8px;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-      background: white;
+      width: 100%;
     }
 
     table {
+      background-image: url("logo.png");
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: 400px; 
+      position: relative;
+      z-index: 1;
       width: 100%;
       min-width: 600px;
+      margin-bottom: 40px;
+      margin-bottom: 40px;
       border-collapse: collapse;
-      font-size: 1rem;
+      margin-top: 1rem;
+    }
+
+    table input {
+      width: 100%;
+      box-sizing: border-box;
     }
 
     th, td {
-      padding: 0.8rem 1rem;
+      padding: 0.6rem;
       border: 1px solid #eee;
       text-align: center;
-      vertical-align: middle;
     }
 
     th {
-      background-color: #6d4c41;
+      background: linear-gradient(-20deg, rgb(27, 10, 0), rgb(73, 34, 11), rgb(78, 40, 18));
       color: white;
-      font-weight: 600;
-    }
-
-    table input[type="text"],
-    table input[type="number"] {
-      width: 100%;
-      padding: 0.3rem 0.6rem;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      font-size: 1rem;
-      box-sizing: border-box;
-      font-family: inherit;
     }
 
     .actions button {
-      background-color: #ff7043;
+      background:linear-gradient(-20deg, rgb(95, 10, 10),rgba(124, 16, 16, 0.966));
       color: white;
-      padding: 0.4rem 0.7rem;
-      border-radius: 6px;
-      border: none;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: background-color 0.3s;
+      padding: 0.4rem 0.6rem;
     }
 
     .actions button:hover {
       background-color: #e64a19;
     }
 
-    /* Toast */
+    .login-area {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    #userEmail {
+      margin-top: 1rem;
+      font-size: 0.95rem;
+      color: #5d4037;
+    }
+    
     .toast {
       position: fixed;
       bottom: 20px;
       right: 20px;
-      background: #4caf50;
+      background: linear-gradient(-30deg, rgb(9, 87, 9), green);
       color: white;
       padding: 12px 20px;
       border-radius: 8px;
@@ -225,8 +186,6 @@
       pointer-events: none;
       transition: opacity 0.3s ease, transform 0.3s ease;
       z-index: 1000;
-      max-width: 300px;
-      word-wrap: break-word;
     }
 
     .toast.show {
@@ -240,40 +199,18 @@
     }
 
     footer {
-      width: 100%;
-      max-width: 900px;
-      text-align: center;
-      padding: 1rem;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(-20deg, rgb(27, 10, 0), rgb(73, 34, 11), rgb(78, 40, 18));
       color: white;
-      background-color: #60443a;
+      text-align: center;
+      padding: 10px 20px;
+      border-radius: 12px;
+      width: fit-content;
+      margin: 20px auto; 
       font-weight: bold;
-      border-radius: 0 0 12px 12px;
-      margin-top: 2rem;
+      
     }
-
-    /* Responsividade */
-    @media (max-width: 768px) {
-      main {
-        padding: 1rem;
-      }
-
-      #adicionarProdutoContainer {
-        flex-direction: column;
-      }
-
-      #adicionarProdutoContainer button {
-        width: 100%;
-        flex: none;
-      }
-
-      #filtroBusca {
-        max-width: 100%;
-      }
-
-      table {
-        min-width: 100%;
-      }
-    }
+    
   </style>
 </head>
 <body>
@@ -286,40 +223,32 @@
     <div class="login-area">
       <p id="userEmail"></p>
       <button id="loginBtn">Entrar com Google</button>
-      <button id="logoutBtn" style="display:none;">Sair</button>
+      <button id="logoutBtn" class="logout" style="display: none;">Sair</button>
     </div>
 
-    <section id="estoqueArea" style="display:none;">
+    <div id="estoqueArea" style="display: none;">
       <h2>Adicionar Produto</h2>
-      <div id="adicionarProdutoContainer">
-        <input type="text" id="nomeProduto" placeholder="Nome do produto" />
-        <input type="number" id="quantidadeProduto" placeholder="Quantidade" min="0" />
-        <button onclick="adicionarProduto()">Adicionar</button>
-      </div>
+      <input type="text" id="nomeProduto" placeholder="Nome do produto" />
+      <input type="number" id="quantidadeProduto" placeholder="Quantidade" />
+      <button onclick="adicionarProduto()">Adicionar</button>
 
       <h2>Estoque Atual</h2>
       <input type="text" id="filtroBusca" placeholder="Buscar produto" oninput="atualizarTabela()" />
-
-      <div class="tabela-container">
-        <table>
-          <thead>
-            <tr>
-              <th>Produto</th>
-              <th>Quantidade</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          <tbody id="tabelaEstoque"></tbody>
-        </table>
-      </div>
-    </section>
+      <div class="tabela-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Produto</th>
+            <th>Quantidade</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody id="tabelaEstoque"></tbody>
+      </table>
+    </div>
   </main>
 
   <div class="toast" id="toast"></div>
-
-  <footer>
-    <p>© 2025 Desenvolvido por Luiz Guilherme e Nathalia.</p>
-  </footer>
 
   <script>
     const firebaseConfig = {
@@ -371,8 +300,8 @@
     });
 
     async function carregarEstoque() {
-      const doc = await db.collection('estoques').doc(userUID).get();
-      estoque = doc.exists ? doc.data().itens || [] : [];
+      const snapshot = await db.collection('estoques').doc(userUID).get();
+      estoque = snapshot.exists ? snapshot.data().itens || [] : [];
       atualizarTabela();
     }
 
@@ -387,16 +316,16 @@
 
       estoque
         .filter(item => item.nome.toLowerCase().includes(filtro))
-        .forEach((item, idx) => {
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td><input type="text" value="${item.nome}" onchange="editarNome(${idx}, this.value)" /></td>
-            <td><input type="number" min="0" value="${item.quantidade}" onchange="editarQuantidade(${idx}, this.value)" /></td>
+        .forEach((item, index) => {
+          const linha = document.createElement('tr');
+          linha.innerHTML = `
+            <td><input type="text" value="${item.nome}" onchange="editarNome(${index}, this.value)" /></td>
+            <td><input type="number" value="${item.quantidade}" onchange="editarQuantidade(${index}, this.value)" /></td>
             <td class="actions">
-              <button onclick="removerProduto(${idx})"><i class="fas fa-trash-alt"></i></button>
+              <button onclick="removerProduto(${index})"><i class="fas fa-trash-alt"></i></button>
             </td>
           `;
-          tabela.appendChild(tr);
+          tabela.appendChild(linha);
         });
     }
 
@@ -404,7 +333,7 @@
       const nome = document.getElementById('nomeProduto').value.trim();
       const quantidade = parseInt(document.getElementById('quantidadeProduto').value);
 
-      if (!nome || isNaN(quantidade) || quantidade < 0) {
+      if (!nome || isNaN(quantidade)) {
         showToast('Preencha os campos corretamente.', true);
         return;
       }
@@ -453,13 +382,14 @@
       atualizarTabela();
     }
 
-    function showToast(mensagem, erro = false) {
-      toast.textContent = mensagem;
+    function showToast(msg, erro = false) {
+      toast.textContent = msg;
       toast.className = 'toast show' + (erro ? ' error' : '');
-      setTimeout(() => {
-        toast.className = 'toast';
-      }, 3000);
+      setTimeout(() => toast.className = 'toast', 3000);
     }
   </script>
 </body>
+<footer>
+  <h3>Desenvolvido por: Nathalia e Luiz Guilherme</h3>
+</footer>
 </html>
