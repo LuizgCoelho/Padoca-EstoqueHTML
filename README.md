@@ -80,6 +80,7 @@ Se preferir, você também pode clonar o repositório e conectar com o seu próp
 
 Desenvolvido por Luiz Guilherme e Nathalia 
 📧 [luizg.coelho1802@gmail.com](mailto:luizg.coelho1802@gmail.com)
+📧 [nathaliamartinsandrade.anaile@gmail.com](mailto:nathaliamartinsandrade.anaile@gmail.com)
 
 ---
 
